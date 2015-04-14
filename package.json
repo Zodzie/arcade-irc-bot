@@ -1,0 +1,24 @@
+{
+  "name": "arcade-irc-bot",
+  "version": "1.0.0",
+  "description": "A bot that communicates with the invokestatic Arcade.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "~0.12.2",
+    "npm": "~2.7.5"
+  },
+  "author": "Joe Haddad <joe@invokestatic.com>",
+  "license": "MIT",
+  "dependencies": {
+    "async": "~0.9.0",
+    "irc": "~0.3.11",
+    "jsonwebtoken": "~5.0.0",
+    "redis": "~0.12.1",
+    "request": "~2.55.0",
+    "sprintf-js": "~1.0.2",
+    "underscore": "~1.8.3"
+  }
+}
