@@ -21,6 +21,7 @@ var generic_setup = require('./app/generic-api');
 var dd_setup = require('./app/dd-api');
 var dice_setup = require('./app/dice-api');
 var ou_setup = require('./app/ou-api');
+var bj_setup = require('./app/bj-api');
 
 client.addListener('registered', function () {
   client.say('NickServ', 'IDENTIFY ' + process.env.IRC_USER_PASSWORD);
@@ -36,12 +37,13 @@ client.addListener('join' + BOT_CHAN, function (who) {
       var dd_api = dd_setup(client, channel, identity_utils);
       var dice_api = dice_setup(client, channel, identity_utils);
       var ou_api = ou_setup(client, channel, identity_utils);
-      registerCommands(identity_utils, generic_api, dd_api, dice_api, ou_api);
+      var bj_api = bj_setup(client, channel, identity_utils);
+      registerCommands(identity_utils, generic_api, dd_api, dice_api, ou_api, bj_api);
     }
   }
 });
 
-function registerCommands(identity_utils, generic_api, dd_api, dice_api, ou_api) {
+function registerCommands(identity_utils, generic_api, dd_api, dice_api, ou_api, bj_api) {
   client.addListener('message' + BOT_CHAN, function (from, message) {
     if (message.length < 1 || !(message[0] == '!' || message[0] == '.' || message[0] == '@')) {
       return;
@@ -73,11 +75,11 @@ function registerCommands(identity_utils, generic_api, dd_api, dice_api, ou_api)
         if (params.length < 3) {
           break;
         }
-        var seats = 2;
+        var dd_seats = 2;
         if (params.length > 3) {
-          seats = params[3];
+          dd_seats = params[3];
         }
-        dd_api.create(from, seats, params[2]);
+        dd_api.create(from, dd_seats, params[2]);
         break;
       case 'join':
         if (params.length < 3) {
@@ -111,6 +113,46 @@ function registerCommands(identity_utils, generic_api, dd_api, dice_api, ou_api)
         break;
       }
       ou_api.play(from, params[1], params[2]);
+      break;
+    case 'bj':
+      if (!identity_utils.isIdentified(from) || params.length < 2) {
+        break;
+      }
+      switch (params[1]) {
+      case 'list':
+        bj_api.list(from);
+        break;
+      case 'create':
+        if (params.length < 3) {
+          break;
+        }
+        bj_api.create(from, params[2], 30, 30);
+        break;
+      case 'join':
+        if (params.length !== 4) {
+          break;
+        }
+        bj_api.join(params[2], params[3], from);
+        break;
+      case 'leave':
+        if (params.length < 3) {
+          break;
+        }
+        bj_api.leave(params[2], from);
+        break;
+      case 'hit':
+        if (params.length < 3) {
+          break;
+        }
+        bj_api.hit(params[2], from);
+        break;
+      case 'stand':
+        if (params.length < 3) {
+          break;
+        }
+        bj_api.stand(params[2], from);
+        break;
+      }
       break;
     }
   });
